@@ -1,0 +1,41 @@
+#! /usr/bin/env ruby
+
+require 'socket'
+require 'webrick'
+include WEBrick
+
+
+
+def get_interfaces
+    interfaces = {}
+    Socket.getifaddrs.each do |i|
+        if i.addr.ipv4?
+            interfaces[i.name] = i.addr.ip_address
+        end
+    end
+    interfaces
+end
+
+
+def print_interfaces(port)
+    get_interfaces.each do |interface, ip|
+        puts "    (#{interface}) http://#{ip}:#{port}"
+    end
+end
+
+
+def start_server(dir, port)
+    server = HTTPServer.new(:Port=>port,:DocumentRoot=>dir )
+    trap("INT"){ server.shutdown }
+    server.start
+    server
+end
+
+
+dir = Dir::pwd
+port = 8000
+
+puts "Starting HTTP server on '#{dir}'"
+puts "Hit any of these endpoints:"
+print_interfaces(port)
+start_server(dir, port)
