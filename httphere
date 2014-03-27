@@ -33,7 +33,10 @@ end
 
 
 dir = Dir::pwd
-port = 8000
+port = ARGV[0].to_i
+if port == 0
+    port = 8000
+end
 
 puts "Starting HTTP server on '#{dir}'"
 puts "Hit any of these endpoints:"
